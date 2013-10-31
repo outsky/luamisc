@@ -1,0 +1,1 @@
+small functions for lua
