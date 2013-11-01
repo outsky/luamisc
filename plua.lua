@@ -6,28 +6,29 @@ local function plua(v)
     end
 
     local reg = {}
+    local ret = {}
     local function _plua(k,t,tab)
-        local ret = ""
         if type(t)=="table" then
             if reg[t]~=nil then
-                ret = ret .. reg[t] .. "\n"
+                ret[#ret+1] = reg[t] .. "\n"
             else
                 reg[t] = tostring(k) .. "(" .. tostring(t) .. "),"
-                ret = ret .. "{\n"
+                ret[#ret+1] = "{\n"
                 local old = tab
                 tab = tab .. "    "
                 for k,v in pairs(t) do
-                    ret = ret .. tab .. tostring(k) .. " = " .. _plua(k,v,tab)
+                    ret[#ret+1] = tab .. tostring(k) .. " = "
+                    _plua(k,v,tab)
                 end
-                ret = ret .. old .. "}, --" .. tostring(k) .. "\n"
+                ret[#ret+1] = old .. "}, --" .. tostring(k) .. "\n"
             end
         else
-            ret = ret .. str(t) .. ",\n"
+            ret[#ret+1] = str(t) .. ",\n"
         end
-        return ret
     end
 
-    return _plua("root", v, "")
+    _plua("root", v, "")
+    return table.concat(ret)
 end
 
 -- test
